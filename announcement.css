@@ -1,0 +1,134 @@
+.hero {
+    padding: var(--padding-hero);
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: var(--font-size-header);
+    margin-bottom: var(--margin-hero-bottom);
+}
+
+.hero p {
+    font-size: var(--font-size-hero-text);
+    margin-bottom: var(--margin-large);
+}
+
+/* App Announcement */
+.app-announcement {
+    text-align: center;
+    padding: var(--padding-announcement);
+    background-color: var(--color-body-bg);
+    position: relative;
+    overflow: hidden;
+}
+
+.app-announcement h1 {
+    font-size: var(--font-size-announcement-title);
+    color: var(--color-black);
+    margin-bottom: var(--margin-small);
+}
+
+.app-announcement p {
+    font-size: var(--font-size-hero-text);
+    color: var(--color-gray-dark);
+    margin-bottom: var(--margin-announcement-bottom);
+}
+
+.app-announcement .cta-demo {
+    background-color: var(--color-green);
+    color: var(--color-white);
+    padding: var(--padding-announcement-button);
+    border-radius: var(--radius-large);
+    font-size: var(--font-size-medium);
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: background-color var(--transition-speed) var(--transition-ease),
+        box-shadow var(--transition-speed) var(--transition-ease);
+}
+
+.app-announcement .cta-demo:hover {
+    background-color: var(--color-green);
+    box-shadow: var(--shadow-cta-button);
+}
+
+.announcement-image img {
+    margin: var(--margin-image-vertical) 0;
+    box-shadow: var(--shadow-announcement-img);
+    max-width: 80%;
+}
+
+/* Button */
+.cta-button {
+    width: var(--width-cta-button);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    padding: var(--padding-cta-button);
+    border-radius: var(--radius-small);
+    background-color: var(--color-black);
+    color: var(--color-white);
+    font-size: var(--font-size-medium);
+    font-weight: bold;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.4s ease;
+}
+
+/* Button */
+.cta-button {
+    width: var(--width-cta-button);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    padding: 2px 2px;
+    border-radius: var(--radius-small);
+    background-color: var(--color-white);
+    color: var(--color-black);
+    font-size: var(--font-size-medium);
+    font-weight: bold;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.4s ease;
+}
+
+.cta-icon {
+    width: var(--size-cta-icon);
+    height: var(--size-cta-icon);
+    background-color: var(--color-gray-dark);
+    margin-right: 10px;
+    border-radius: var(--radius-small);
+    transition: width 0.4s ease, margin-right 0.4s ease;
+}
+
+.cta-button:hover .cta-icon {
+    width: 100%;
+    margin-right: 0;
+}
+
+.cta-button span {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease, transform 0.5s ease, visibility 0s;
+}
+
+.cta-button:hover span {
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-60%, -50%);
+    /* Move 10% to the left */
+    transition: opacity 0.5s ease, transform 0.5s ease, visibility 0s 0.5s;
+}
+
+.cta-button:not(:hover) span {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.2s ease 0.4s, transform 0.5s ease 0.4s, visibility 0s linear 0.4s;
+}

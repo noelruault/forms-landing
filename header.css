@@ -1,0 +1,184 @@
+.cta-buttons .cta-signin {
+    padding: var(--padding-medium) var(--padding-large);
+    /* border: 1px solid transparent;
+    border-radius: var(--radius-small);
+    font-size: var(--font-size-medium);
+    transition: background-color var(--transition-speed) var(--transition-ease),
+    transform var(--transition-speed) var(--transition-ease); */
+}
+
+.cta-buttons button:hover {
+    background-color: var(--color-gray-dark);
+}
+
+/* Header */
+.site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--padding-large);
+    background-color: transparent;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: background-color var(--transition-speed) var(--transition-ease),
+        box-shadow var(--transition-speed) var(--transition-ease);
+}
+
+.logo {
+    display: flex;
+    justify-content: center;
+    flex: 1;
+}
+
+.navigation {
+    display: flex;
+    justify-content: center;
+    gap: var(--gap-large);
+    flex: 2;
+}
+
+.navigation a {
+    text-decoration: none;
+    color: var(--color-black);
+    padding: var(--padding-small) 0;
+    transition: transform var(--transition-speed) var(--transition-ease), color var(--transition-speed) var(--transition-ease);
+}
+
+.navigation a:hover {
+    color: var(--color-gray-dark);
+    transform: var(--animation-button)
+}
+
+/* CTA Buttons */
+.cta-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--gap-small);
+    flex: 1;
+}
+
+.cta-signin {
+    background-color: transparent;
+    border: 1px solid var(--color-black);
+    color: var(--color-black);
+    transition: transform var(--transition-speed) var(--transition-ease);
+}
+
+.cta-demo {
+    background-color: var(--color-black);
+    color: var(--color-white);
+    opacity: var(--opacity-hidden);
+    pointer-events: none;
+    transition: opacity var(--transition-speed) var(--transition-ease),
+        transform var(--transition-speed) var(--transition-ease);
+}
+
+.sticky .cta-demo {
+    opacity: var(--opacity-visible);
+    pointer-events: all;
+    transform: translateX(0);
+}
+
+.sticky .cta-signin {
+    transform: translateX(0);
+}
+
+.cta-demo {
+    transform: translateX(100px);
+}
+
+.cta-signin {
+    transform: translateX(20px);
+}
+
+.sticky {
+    background-color: var(--color-white);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Burger Menu */
+.burger {
+    display: none;
+    cursor: pointer;
+    flex-direction: column;
+    gap: var(--gap-small);
+}
+
+.burger-line {
+    width: var(--burger-line-width);
+    height: var(--burger-line-height);
+    background-color: var(--color-black);
+}
+
+.burger.is-active .burger-line:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+}
+
+.burger.is-active .burger-line:nth-child(2) {
+    opacity: var(--opacity-hidden);
+}
+
+.burger.is-active .burger-line:nth-child(3) {
+    transform: translateY(-14px) rotate(-45deg);
+}
+
+.menu {
+    display: flex;
+    transition: all 0.4s ease;
+}
+
+.menu.is-active {
+    display: block;
+}
+
+@media screen and (max-width: 768px) {
+    .site-header {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .logo {
+        display: flex;
+        justify-content: flex-start;
+        order: 1;
+        flex: 0;
+        /* Ensure doesn't take extra space */
+    }
+
+    .burger {
+        display: flex;
+        justify-content: flex-end;
+        order: 3;
+        /* Keep it last in the header */
+        flex: 0;
+        /* Ensure doesn't take extra space */
+    }
+
+    .navigation {
+        display: none;
+    }
+
+    .navigation.is-active {
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap-small);
+        position: fixed;
+        top: 55px;
+        right: 0;
+        left: 0;
+        background-color: var(--color-white);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: var(--padding-large);
+        text-align: center;
+    }
+
+    .cta-buttons {
+        display: flex;
+        order: 2;
+        flex: 1;
+        justify-content: center;
+    }
+}

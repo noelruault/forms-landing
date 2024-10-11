@@ -1,0 +1,164 @@
+/* Pricing Section */
+.pricing-container {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--gap-large);
+    padding: var(--margin-large);
+    align-items: stretch;
+}
+
+.pricing-card {
+    background-color: var(--color-white);
+    border-radius: var(--radius-medium);
+    box-shadow: var(--shadow-card);
+    padding: var(--padding-large);
+    width: var(--width-card);
+    position: relative;
+    padding-bottom: var(--padding-extra-large);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex-grow: 1;
+}
+
+.pricing-card button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: var(--margin-medium);
+}
+
+.pricing-label {
+    background-color: var(--color-gray-dark);
+    display: inline-block;
+    padding: var(--padding-small) var(--padding-medium);
+    border-radius: var(--radius-large);
+    font-size: var(--font-size-small);
+    color: var(--color-black);
+    margin-bottom: var(--margin-medium);
+    white-space: nowrap;
+    align-self: flex-start;
+}
+
+.pricing-card-content {
+    min-height: var(--height-pricing-card-content);
+}
+
+.pricing-container h3 {
+    font-size: var(--font-size-large);
+    font-weight: bold;
+    color: var(--color-black);
+    margin-bottom: var(--margin-small);
+}
+
+.pricing-container h3 {
+    min-height: calc(2.4em)
+        /* REMOVEME: FIX for small devices */
+}
+
+.pricing-includes p {
+    display: flex;
+    align-items: center;
+    font-size: var(--font-size-medium);
+    color: var(--color-gray-dark);
+    margin: var(--margin-small) 0;
+    position: relative;
+}
+
+.pricing-includes p::before {
+    content: '';
+    display: inline-block;
+    min-width: var(--pricing-includes-svg-size);
+    min-height: var(--pricing-includes-svg-size);
+    margin-right: 10px;
+    mask: var(--pricing-includes-svg-image) no-repeat center;
+    mask-size: contain;
+    background-color: var(--color-green);
+}
+
+
+.pricing-btn {
+    background-color: var(--color-black);
+    color: var(--color-white);
+    padding: var(--padding-button);
+    border: none;
+    border-radius: var(--radius-large);
+    font-size: var(--font-size-medium);
+    cursor: pointer;
+    margin-top: var(--margin-medium);
+    display: inline-block;
+}
+
+.pricing-description {
+    margin: var(--margin-medium) 0;
+}
+
+.pricing-btn:hover {
+    opacity: var(--opacity-hover);
+}
+
+.pricing-card::before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    opacity: var(--opacity-card);
+}
+
+.pricing-card * {
+    position: relative;
+    z-index: 1;
+}
+
+.pricing-card:nth-child(1)::before,
+.pricing-card:nth-child(3)::before {
+    width: var(--polygon-size);
+    height: var(--polygon-size);
+}
+
+.pricing-card:nth-child(1)::before {
+    top: -30px;
+    right: 30px;
+    border-radius: 50%;
+    background: linear-gradient(20deg, var(--color-card-1-bg), transparent),
+        var(--svg-noise);
+    filter: contrast(110%) brightness(100%);
+}
+
+.pricing-card:nth-child(3)::before {
+    top: -30px;
+    right: -30px;
+    border-radius: 20%;
+    background: linear-gradient(20deg, var(--color-card-3-bg), transparent),
+        var(--svg-noise);
+    filter: contrast(130%) brightness(100%);
+}
+
+.pricing-card:nth-child(2)::before {
+    width: var(--polygon-size);
+    height: var(--polygon-size);
+    top: 30px;
+    right: -30px;
+    border-radius: 40%;
+    background: linear-gradient(20deg, var(--color-card-2-bg), transparent),
+        var(--svg-noise);
+    filter: contrast(120%) brightness(100%);
+}
+
+.pricing-card hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #ccc;
+}
+
+@media screen and (max-width: 768px) {
+    .pricing-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .pricing-card {
+        width: 90%;
+        margin-bottom: var(--margin-medium);
+    }
+}
