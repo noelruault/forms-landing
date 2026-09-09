@@ -6,9 +6,9 @@
     "dev": "next dev",
     "start": "next start",
     "lint": "next lint",
-    "postbuild": "echo 'educacionabordo.com' > out/CNAME && touch out/.nojekyll",
-    "build": "next build && bun run postbuild",
-    "deploy": "bun gh-pages -d out -t true"
+    "build": "next build",
+    "deploy": "bun run build && bunx wrangler deploy",
+    "deploy:gh-pages": "bun run build && echo 'educacionabordo.com' > out/CNAME && touch out/.nojekyll && bun gh-pages -d out -t true"
   },
   "browserslist": "defaults, not ie <= 11",
   "dependencies": {
