@@ -3,13 +3,40 @@ import clsx from 'clsx'
 
 import '@/styles/tailwind.css'
 
+const title = 'Educación a Bordo - Domina tu titulación náutica'
+const description =
+  'Prepárate para tu examen de titulación náutica: elige tus temas, practica con simulacros cronometrados y sigue tu progreso, a tu ritmo.'
+
 export const metadata = {
+  // Absolute base so og:image and og:url resolve to the public site; WhatsApp ignores relative URLs.
+  metadataBase: new URL('https://educacionabordo.com'),
   title: {
     template: '%s - Educación a Bordo',
-    default: 'Educación a Bordo - Domina tu titulación náutica',
+    default: title,
   },
-  description:
-    'Prepárate para tu examen de titulación náutica: elige tus temas, practica con simulacros cronometrados y sigue tu progreso, a tu ritmo.',
+  description,
+  openGraph: {
+    type: 'website',
+    locale: 'es_ES',
+    url: '/',
+    siteName: 'Educación a Bordo',
+    title,
+    description,
+    images: [
+      {
+        url: '/og.png',
+        width: 1200,
+        height: 630,
+        alt: 'Educación a Bordo, tu titulación náutica a tu ritmo',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title,
+    description,
+    images: ['/og.png'],
+  },
 }
 
 const inter = Inter({
