@@ -1,6 +1,7 @@
-# Landing for educacionabordo.com: the Next.js static export in ./out served by Workers Static Assets.
+# Landing for educacionabordo.com: the Next.js static export in ./out served by Workers Static Assets, with worker.js in front only to 301 plain HTTP and www to https://educacionabordo.com.
 # The custom_domain routes make Cloudflare create the DNS records and certificates, so nothing is added by hand in the DNS UI.
 name = "educacionabordo-landing"
+main = "worker.js"
 compatibility_date = "2026-08-01"
 
 # Top-level keys must stay above [assets]: anything after a table header belongs to that table, and wrangler silently ignores assets.routes.
@@ -11,6 +12,9 @@ routes = [
 
 [assets]
 directory = "./out"
+binding = "ASSETS"
+# Every request goes through worker.js first so the redirects apply to asset paths too; the script then hands off to the assets.
+run_worker_first = true
 # Next's static export ships a 404.html; serve it with a real 404 instead of falling back to the home page.
 not_found_handling = "404-page"
 html_handling = "auto-trailing-slash"
