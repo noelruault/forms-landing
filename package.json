@@ -1,0 +1,33 @@
+{
+  "name": "tailwindui-salient",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "start": "next start",
+    "lint": "next lint",
+    "postbuild": "echo 'educacionabordo.com' > out/CNAME && touch out/.nojekyll",
+    "build": "next build && bun run postbuild",
+    "deploy": "bun gh-pages -d out -t true"
+  },
+  "browserslist": "defaults, not ie <= 11",
+  "dependencies": {
+    "@headlessui/react": "latest",
+    "@headlessui/tailwindcss": "latest",
+    "@tailwindcss/forms": "latest",
+    "autoprefixer": "latest",
+    "clsx": "latest",
+    "gh-pages": "latest",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "tailwindcss": "latest"
+  },
+  "devDependencies": {
+    "eslint": "latest",
+    "eslint-config-next": "latest",
+    "prettier": "latest",
+    "prettier-plugin-tailwindcss": "latest",
+    "sharp": "latest"
+  }
+}
