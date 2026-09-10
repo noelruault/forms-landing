@@ -2,6 +2,8 @@
 
 Marketing site for [Educación a Bordo](https://educacionabordo.com), the boat-licence exam prep platform. Next.js static export, Tailwind CSS, served from Cloudflare Workers Static Assets at `educacionabordo.com` and `www.educacionabordo.com`.
 
+Source of truth: `github.com/blackbaostudio/nautica-web` (private). `noelruault/forms-landing` only remains as the GitHub Pages fallback described below.
+
 ## Develop
 
 ```bash
