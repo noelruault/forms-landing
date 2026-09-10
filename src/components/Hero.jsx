@@ -3,12 +3,12 @@
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import clsx from 'clsx'
 
 import { Button } from '@/components/Button'
 import { Logo } from '@/components/Logo'
+import { MobileMenu } from '@/components/MobileMenu'
 import backgroundImage from '@/images/background-call-to-action.webp'
-import { APP_URL, DEMO_URL } from '@/lib/site'
+import { APP_URL, DEMO_URL, NAV } from '@/lib/site'
 
 const VIDEO_SRC = '/media/tour.mp4'
 const VIDEO_POSTER = '/media/tour-poster.webp'
@@ -23,20 +23,19 @@ const text = {
   scroll: 'Descubre más',
 }
 
-const navLinks = [
-  { href: '#features', label: 'Características' },
-  { href: '#testimonials', label: 'Opiniones' },
-  { href: '#pricing', label: 'Precio' },
-]
+// The desktop bar shows only top-level links; groups live in the mobile sheet.
+const desktopLinks = NAV.filter((item) => item.href)
 
 function OverlayNav() {
   let [open, setOpen] = useState(false)
+  let toggleRef = useRef(null)
 
   return (
     <header className="absolute inset-x-0 top-0 z-30">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-10 lg:py-6">
+      {/* Below sm everything shrinks so toggle, mark, wordmark and button fit a 360 px phone without clipping. */}
+      <nav className="mx-auto flex max-w-7xl items-center justify-between gap-x-3 px-4 py-4 sm:px-6 sm:py-5 lg:px-10 lg:py-6">
         <div className="hidden flex-1 items-center gap-x-8 text-sm font-medium tracking-wide text-white/80 md:flex">
-          {navLinks.map((link) => (
+          {desktopLinks.map((link) => (
             <Link key={link.href} href={link.href} className="transition hover:text-white">
               {link.label}
             </Link>
@@ -44,66 +43,44 @@ function OverlayNav() {
         </div>
 
         <button
+          ref={toggleRef}
           type="button"
-          aria-label="Abrir menú"
-          onClick={() => setOpen((v) => !v)}
-          className="flex h-9 w-9 items-center justify-center text-white md:hidden"
+          aria-label="Abrir menú de navegación"
+          aria-haspopup="dialog"
+          aria-expanded={open}
+          onClick={() => setOpen(true)}
+          className="inline-flex h-8 w-8 flex-none items-center justify-center rounded-sm border border-white/30 text-white transition hover:bg-white/10 md:hidden"
         >
-          <svg viewBox="0 0 20 14" fill="none" className="h-4 w-5" aria-hidden="true">
-            <path d="M0 1h20M0 7h20M0 13h20" stroke="currentColor" strokeWidth="1.5" />
+          <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+            <path d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
 
         <Link
           href="#"
           aria-label="Educación a Bordo"
-          className="flex flex-none items-center justify-center text-white [&_span]:text-white"
+          className="flex min-w-0 flex-none items-center justify-center text-white [&_span]:text-white"
         >
           <Logo
             variant="nav"
-            className="flex items-center gap-2.5 [&_img]:h-10 [&_span]:text-base [&_span]:font-medium sm:[&_img]:h-12 sm:[&_span]:text-lg"
+            className="flex items-center gap-2 [&_img]:h-8 [&_span]:whitespace-nowrap [&_span]:text-sm [&_span]:font-medium sm:gap-2.5 sm:[&_img]:h-12 sm:[&_span]:text-lg"
           />
         </Link>
 
-        <div className="flex flex-1 items-center justify-end gap-x-6">
+        <div className="flex flex-1 items-center justify-end gap-x-4 sm:gap-x-6">
           <Link
             href={APP_URL}
             className="hidden text-sm font-medium tracking-wide text-white/80 transition hover:text-white lg:block"
           >
             Accede
           </Link>
-          <Button href="#pricing" color="white">
+          <Button href="#pricing" color="white" className="flex-none max-sm:px-3 max-sm:text-xs">
             Únete<span className="hidden lg:inline">&nbsp;ahora</span>
           </Button>
         </div>
       </nav>
 
-      <div
-        className={clsx(
-          'origin-top border-t border-white/10 bg-slate-950/70 backdrop-blur-md transition md:hidden',
-          open ? 'block' : 'hidden',
-        )}
-      >
-        <div className="flex flex-col gap-y-1 px-6 py-4 text-base text-white/90">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setOpen(false)}
-              className="rounded-lg px-2 py-2 transition hover:bg-white/10"
-            >
-              {link.label}
-            </Link>
-          ))}
-          <Link
-            href={APP_URL}
-            onClick={() => setOpen(false)}
-            className="rounded-lg px-2 py-2 transition hover:bg-white/10"
-          >
-            Accede
-          </Link>
-        </div>
-      </div>
+      <MobileMenu open={open} onClose={() => setOpen(false)} items={NAV} returnFocusTo={toggleRef} />
     </header>
   )
 }

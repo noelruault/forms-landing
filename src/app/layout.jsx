@@ -61,7 +61,12 @@ export default function RootLayout({ children }) {
         lexend.variable,
       )}
     >
-      <body className="flex h-full flex-col">{children}</body>
+      <body className="min-h-full">
+        {/* The whole page sits in one shell so the mobile menu can scale it back behind the sheet; the sheet itself portals to body, outside the transform. */}
+        <div id="page" className="page-shell flex min-h-full flex-col">
+          {children}
+        </div>
+      </body>
     </html>
   )
 }
