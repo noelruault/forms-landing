@@ -28,6 +28,7 @@
     "eslint-config-next": "latest",
     "prettier": "latest",
     "prettier-plugin-tailwindcss": "latest",
-    "sharp": "latest"
+    "sharp": "latest",
+    "wrangler": "^4.130.0"
   }
 }
