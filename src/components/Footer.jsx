@@ -16,7 +16,12 @@ const navLinks = [
   { href: APP_URL, label: 'Accede' },
 ]
 
-// Interactive dot-matrix wordmark: the brand is rasterised into a grid of dots that scatter away from the pointer and ease back, echoing op.al's footer.
+// One full crossing of the light band, edge to edge, including the dark gap before it re-enters.
+const SWEEP_MS = 6500
+// Dot brightness from resting (0.3) to fully lit (0.85), quantised so the loop never builds colour strings per dot.
+const SHADES = Array.from({ length: 17 }, (_, i) => `rgba(255,255,255,${(0.3 + (0.55 * i) / 16).toFixed(3)})`)
+
+// Interactive dot-matrix wordmark after op.al's footer: the brand is rasterised into dots; a soft band of light sweeps across them on a loop (phones have no pointer to hover with), and a pointer scatters them.
 function DotMatrix() {
   let canvasRef = useRef(null)
 
@@ -31,9 +36,26 @@ function DotMatrix() {
     let raf = 0
     let dpr = Math.min(window.devicePixelRatio || 1, 2)
 
-    let GAP = 9 // px between dots (CSS space)
     let RADIUS = 90 // pointer influence radius
-    let DOT = 1.7 // dot radius
+    // Pitch and dot radius are set per build from the canvas width: a fixed 9 px grid leaves a nine-letter word with four dots of height on a phone.
+    let GAP = 9
+    let DOT = 2.4
+
+    // Returns the horizontal extent of the ink in an RGBA buffer, sampled coarsely.
+    function inkBounds(data, w, h) {
+      let minX = w
+      let maxX = -1
+      for (let x = 0; x < w; x += 2) {
+        for (let y = 0; y < h; y += 4) {
+          if (data[(y * w + x) * 4 + 3] > 128) {
+            if (x < minX) minX = x
+            if (x > maxX) maxX = x
+            break
+          }
+        }
+      }
+      return { minX, maxX }
+    }
 
     function build() {
       let rect = canvas.getBoundingClientRect()
@@ -42,6 +64,9 @@ function DotMatrix() {
       canvas.width = w * dpr
       canvas.height = h * dpr
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      // ~4.4 px on a 350 px phone, 9 px from tablets up; dot radius at op.al's ratio to the pitch.
+      GAP = Math.max(4, Math.min(9, w / 80))
+      DOT = GAP * 0.27
 
       // Rasterise the wordmark into an offscreen buffer at CSS resolution.
       let off = document.createElement('canvas')
@@ -49,35 +74,48 @@ function DotMatrix() {
       off.height = h
       let octx = off.getContext('2d')
       let lines = Array.isArray(WORDMARK) ? WORDMARK : [WORDMARK]
-      let fontSize = (h / lines.length) * 0.82
+      let fontSize = (h / lines.length) * 0.94
       octx.fillStyle = '#fff'
       octx.textAlign = 'center'
       octx.textBaseline = 'middle'
-      // Shrink until the widest line fits the available width.
-      do {
-        octx.font = `700 ${fontSize}px "Lexend", system-ui, sans-serif`
-        let widest = Math.max(...lines.map((l) => octx.measureText(l).width))
-        if (widest <= w * 0.98) break
-        fontSize -= 4
-      } while (fontSize > 8)
-      let lineH = fontSize * 1.02
-      let startY = h / 2 - (lineH * (lines.length - 1)) / 2
-      lines.forEach((line, i) => octx.fillText(line, w / 2, startY + i * lineH))
+      let data
+      // Fit by measurement first, then confirm on the rendered pixels: measureText has misreported on some mobile browsers, and the ink cannot.
+      for (let attempt = 0; attempt < 10; attempt++) {
+        do {
+          octx.font = `700 ${fontSize}px "Lexend", system-ui, sans-serif`
+          let widest = Math.max(...lines.map((l) => octx.measureText(l).width))
+          if (widest <= w * 0.98) break
+          fontSize -= 4
+        } while (fontSize > 8)
+        let lineH = fontSize * 1.02
+        let startY = h / 2 - (lineH * (lines.length - 1)) / 2
+        octx.clearRect(0, 0, w, h)
+        lines.forEach((line, i) => octx.fillText(line, w / 2, startY + i * lineH))
+        data = octx.getImageData(0, 0, w, h).data
+        let { minX, maxX } = inkBounds(data, w, h)
+        if (minX >= w * 0.01 && maxX <= w * 0.99) break
+        fontSize *= 0.9
+      }
 
-      let data = octx.getImageData(0, 0, w, h).data
       dots = []
-      for (let y = 0; y < h; y += GAP) {
-        for (let x = 0; x < w; x += GAP) {
-          if (data[(y * w + x) * 4 + 3] > 128) {
+      for (let y = GAP / 2; y < h; y += GAP) {
+        for (let x = GAP / 2; x < w; x += GAP) {
+          if (data[(Math.floor(y) * w + Math.floor(x)) * 4 + 3] > 128) {
             dots.push({ x, y, bx: x, by: y })
           }
         }
       }
     }
 
-    function draw() {
+    function draw(now) {
       let rect = canvas.getBoundingClientRect()
       ctx.clearRect(0, 0, rect.width, rect.height)
+      // The band runs from beyond the left edge to beyond the right one, tilted so it reads as light rather than a scanline.
+      let phase = (now % SWEEP_MS) / SWEEP_MS
+      let bandX = -0.25 * rect.width + phase * 1.5 * rect.width
+      let half = 0.22 * rect.width
+      let tilt = 0.35
+      let midY = rect.height / 2
       for (let d of dots) {
         let dx = d.bx - pointer.x
         let dy = d.by - pointer.y
@@ -94,12 +132,24 @@ function DotMatrix() {
           d.x += (d.bx - d.x) * 0.12
           d.y += (d.by - d.y) * 0.12
         }
-        ctx.fillStyle = active ? 'rgba(96,165,250,0.9)' : 'rgba(255,255,255,0.22)'
+        let offset = Math.abs(d.bx + (d.by - midY) * tilt - bandX)
+        let glow = offset < half ? (1 - offset / half) ** 2 : 0
+        ctx.fillStyle = active ? 'rgba(96,165,250,0.9)' : SHADES[Math.round(glow * 16)]
         ctx.beginPath()
         ctx.arc(d.x, d.y, DOT, 0, Math.PI * 2)
         ctx.fill()
       }
       raf = requestAnimationFrame(draw)
+    }
+
+    function drawStatic() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      for (let d of dots) {
+        ctx.fillStyle = SHADES[0]
+        ctx.beginPath()
+        ctx.arc(d.x, d.y, DOT, 0, Math.PI * 2)
+        ctx.fill()
+      }
     }
 
     function onMove(e) {
@@ -112,20 +162,13 @@ function DotMatrix() {
       pointer.y = -9999
     }
 
-    function drawStatic() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      for (let d of dots) {
-        ctx.fillStyle = 'rgba(255,255,255,0.22)'
-        ctx.beginPath()
-        ctx.arc(d.x, d.y, DOT, 0, Math.PI * 2)
-        ctx.fill()
-      }
-    }
-
     let started = false
-    let ro = new ResizeObserver(() => {
-      if (started) build()
-    })
+    function rebuild() {
+      if (!started) return
+      build()
+      if (reduced) drawStatic()
+    }
+    let ro = new ResizeObserver(rebuild)
 
     function start() {
       started = true
@@ -154,11 +197,14 @@ function DotMatrix() {
       { rootMargin: '200px' },
     )
     io.observe(canvas)
+    // If the web font lands after the first raster, redo it with the real glyphs.
+    document.fonts.addEventListener('loadingdone', rebuild)
 
     return () => {
       io.disconnect()
       cancelAnimationFrame(raf)
       ro.disconnect()
+      document.fonts.removeEventListener('loadingdone', rebuild)
       window.removeEventListener('pointermove', onMove)
       canvas.removeEventListener('pointerleave', onLeave)
     }
@@ -180,12 +226,13 @@ export function Footer() {
       <div className="py-16 lg:py-8">
         <DotMatrix />
       </div>
-      <div className="flex flex-col items-start gap-10 border-t border-white/10 py-20 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
-        <div className="flex items-center gap-5 sm:gap-7">
+      {/* Below lg everything stacks and centres; from lg the brand sits left and the links right. */}
+      <div className="flex flex-col items-center gap-10 border-t border-white/10 py-16 text-center lg:flex-row lg:items-center lg:justify-between lg:gap-10 lg:py-20 lg:text-left">
+        <div className="flex flex-col items-center gap-4 lg:flex-row lg:gap-7">
           <Link href="#" aria-label="Educación a Bordo" className="flex-none">
             <Image src={logo} alt="" unoptimized className="h-16 w-auto sm:h-20" />
           </Link>
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col items-center gap-1 lg:items-start">
             <Link href="#" className="font-display text-2xl font-medium tracking-tight text-white">
               Educación a Bordo
             </Link>
@@ -196,7 +243,7 @@ export function Footer() {
         </div>
         <nav
           aria-label="Enlaces del pie"
-          className="flex flex-wrap items-center gap-x-10 gap-y-4 text-base tracking-wide text-white/70"
+          className="flex flex-col items-center gap-2.5 text-base tracking-wide text-white/70 lg:flex-row lg:flex-wrap lg:gap-x-10 lg:gap-y-4"
         >
           {navLinks.map((link) => (
             <Link key={link.href} href={link.href} className="transition hover:text-white">
